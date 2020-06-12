@@ -1,0 +1,75 @@
+#%matplotlib inline
+import numpy as np
+import pandas as pd
+import os
+import matplotlib.pyplot as plt
+
+# Using Machine Learning Scikit Lib In Python
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+
+plt.rcParams['figure.figsize'] = (20.0, 10.0)
+
+
+#os.chdir(r'C:\Users\prime\AppData\Local\Programs\Python\Python36\');
+
+# Reading Data
+data = pd.read_csv(r'C:\Users\prime\AppData\Local\Programs\Python\Python36\FRP_Spill.csv')
+data.columns = ['Id', 'FirePower', 'SpillSize']
+print(data.shape)
+print(data.head())
+
+# Collecting X and Y
+#X = data['SpillSize'].values
+#Y = data['FirePower'].values
+X = data.SpillSize.values
+Y = data.FirePower.values
+
+# Mean X and Y
+mean_x = np.mean(X)
+mean_y = np.mean(Y)
+
+# TOTAL number of values
+m = len(X)
+
+# Using the formula to calculate b1 and b2
+numer = 0
+denom = 0
+for i in range(m):
+   numer += (X[i] - mean_x) * (Y[i] - mean_y)
+   denom += (X[i] - mean_x) ** 2
+b1 = numer / denom
+b0 = mean_y - (b1 * mean_x)
+
+# Print coefficients
+print(b1, b0)
+
+# Ploting values and Regression Line
+max_x = np.max(X) + 100
+min_x = np.min(X) - 100
+
+# Calculating Line values  x and y
+x = np.linspace(min_x, max_x, 1000)
+y = b0 + b1 * x
+
+# Plotting Line
+plt.plot(x, y, color='#58b970',label='Regression line')
+# Ploting Scatter Points
+plt.scatter(X, Y, c='#ef5423', label='Scatter Plot')
+
+plt.xlabel('Spill Size (BBL)')
+plt.ylabel('Fire Radiative Power (MW)')
+plt.legend()
+plt.show()
+
+# Coefficient of Determination or R Squared to determine the Goodness of Fit
+ss_t = 0
+ss_r = 0
+for i in range(m):
+      y_pred = b0 + b1 * X[i]
+      ss_t += (Y[i] - mean_y) ** 2
+      ss_r += (Y[i] - y_pred) ** 2
+
+r2 = 1 - (ss_r/ss_t)
+print(r2)
